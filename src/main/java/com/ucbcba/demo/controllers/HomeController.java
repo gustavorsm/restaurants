@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.sql.Struct;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,7 +33,8 @@ public class HomeController {
     }
 
     @RequestMapping(value = {"/", "/home"}, method = RequestMethod.GET)
-    public String welcome(Model model, @RequestParam(value = "searchFilter", required = false, defaultValue = "") String searchFilter, @RequestParam(value = "cityDropdown", required = false, defaultValue = "") String cityDropdown, @RequestParam(value = "showContent", required = false, defaultValue = "") String showContent) {
+    public String welcome(Model model, @RequestParam(value = "searchFilter", required = false, defaultValue = "") String searchFilter, @RequestParam(value = "cityDropdown", required = false, defaultValue = "") String cityDropdown,
+                          @RequestParam(value = "showContent", required = false, defaultValue = "") String showContent ,@RequestParam(value = "scoreDropdown", required = false, defaultValue = "") String scoreDropdown) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Boolean logged = (!getUserRole(auth).equals("notLogged"));
         com.ucbcba.demo.entities.User user = new com.ucbcba.demo.entities.User();
@@ -45,6 +47,26 @@ public class HomeController {
         model.addAttribute("role", getUserRole(auth));
         model.addAttribute("logged", logged);
         model.addAttribute("cities", cityService.listAllCities());
+
+        class Score{
+            String cad;
+            Integer quantity;
+
+            public Score(String cad,Integer quantity){
+                this.cad=cad;
+                this.quantity=quantity;
+            }
+        }
+
+        Score[] scores = new Score[5];
+        scores[0] = new Score("1", 1);
+        scores[1] = new Score("2", 2);
+        scores[2] = new Score("3", 3);
+        scores[3] = new Score("4", 4);
+        scores[4] = new Score("5", 5);
+
+        model.addAttribute("scores", scores);
+
         String search = "";
         if (!searchFilter.equals("")) {
             search = searchFilter;
@@ -57,6 +79,12 @@ public class HomeController {
         }
         model.addAttribute("citySelected", citySelected);
 
+        String scoreSelected = "";
+        if (!scoreDropdown.equals("Any Score")) {
+            scoreSelected = scoreDropdown;
+        }
+        model.addAttribute("scoreSelected", scoreSelected );
+
         String showTable = "table";
         if (showContent.equals("map")) {
             showTable = showContent;
@@ -67,6 +95,29 @@ public class HomeController {
         List<Restaurant> filteredRestaurants;
         for (Restaurant restaurant : restaurantService.listAllRestaurants()) {
             allRestaurants.add(restaurant);
+        }
+
+        Integer score=0;
+        if (!scoreDropdown.equals("") && !scoreDropdown.equals("Any Score")) {
+            score = Integer.parseInt(scoreDropdown);
+        }
+
+        final Integer scoreDrop=score;
+
+        if (scoreDropdown.equals("Any score")) {
+            filteredRestaurants = allRestaurants.stream().filter(
+                    p -> (p.getName().toLowerCase().contains(searchFilter.toLowerCase())
+                            || searchCategories(p.getCategories(), searchFilter.toLowerCase())
+                    )
+            ).collect(Collectors.toList());
+        } else {
+            filteredRestaurants = allRestaurants.stream().filter(
+                    p -> (
+                            (p.getName().toLowerCase().contains(searchFilter.toLowerCase())
+                                    || searchCategories(p.getCategories(), searchFilter.toLowerCase()))
+                                    && restaurantService.getScore(p.getId()) >= scoreDrop
+                    )
+            ).collect(Collectors.toList());
         }
 
         if (cityDropdown.equals("All cities")) {

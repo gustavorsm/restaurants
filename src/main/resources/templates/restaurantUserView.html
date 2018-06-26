@@ -48,7 +48,7 @@
         .fh5co-main-nav .fh5co-menu-1 a,
         .fh5co-main-nav .fh5co-menu-2 a,
         .fh5co-main-nav .fh5co-logo a {
-            padding: 35px 10px;
+            padding: 35px 0px;
             color: white;
             display: -moz-inline-stack;
             display: inline-block;
@@ -124,6 +124,12 @@
             background-color: #f2f2f2
         }
 
+        #actualMap {
+            height: 200px;
+        }
+
+
+
     </style>
     <link href='https://fonts.googleapis.com/css?family=Playfair+Display:400,700,400italic,700italic|Merriweather:300,400italic,300italic,400,700italic'/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
@@ -166,8 +172,9 @@
     </div>
     <div class="container">
         <h1 th:text="${restaurant.name}" align="center"></h1>
+        <div id='actualMap'></div>
         <div class="form-group">
-            <div class="col-md-10">
+            <div class="col-md-6">
                 <h4 class="control-label col-md-1"><b>Likes:</b></h4>
                 <h4 class="col-md-1" th:text="${likes}"></h4>
                 <div th:if="${logged}">
@@ -262,6 +269,65 @@
             </div>
         </div>
 
+        <script th:inline="javascript">
+        let actualMap;
+        let newMarkerMap;
+        let flagMap = true;
+
+        function initMap() {
+            var direcService = new google.maps.DirectionsService;
+            var direcDisplay = new google.maps.DirectionsRenderer;
+
+            /*<![CDATA[*/
+            let mapRestaurant = /*[[${mapRestaurant}]]*/ 'default';
+            actualMap = new google.maps.Map(document.getElementById('actualMap'), {
+                center: {lat: mapRestaurant.latitude, lng: mapRestaurant.longitude },
+                zoom: 8
+            });
+            direcDisplay.setMap(actualMap);
+
+            var marker = new google.maps.Marker({
+                position: {lat: mapRestaurant.latitude, lng: mapRestaurant.longitude },
+                map: actualMap,
+                title: mapRestaurant.name
+            });
+
+            actualMap.addListener('click', function(r) {
+                if (flagMap) {
+                newMarkerMap = new google.maps.Marker({
+                    position: r.latLng,
+                    map: actualMap,
+                });
+                flagMap = false;
+            }
+            else
+                newMarkerMap.setPosition(r.latLng);
+            let restaurantLocation = new google.maps.LatLng(mapRestaurant.latitude,mapRestaurant.longitude);
+            let clickLocation = r.latLng;
+            calculateAndDisplayRoute(direcService, direcDisplay, restaurantLocation, clickLocation);
+            });
+            /*]]>*/
+        }
+
+        function calculateAndDisplayRoute(directionsService, directionsDisplay, restaurantLocation, clickLocation) {
+
+            directionsService.route({
+                origin: restaurantLocation,
+                destination: clickLocation,
+                travelMode: 'DRIVING'
+            }, function(response, status) {
+            if (status === 'OK')
+                directionsDisplay.setDirections(response);
+            else
+                window.alert('error');
+            });
+        }
+        </script>
+        <script async="async" defer="defer"
+                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDyYErgX5t-pShxDcxp3FbHX4Cdnmb01f0&amp;callback=initMap">
+        </script>
+
+
         <div th:if="${logged}">
             <div class="col-md-10 ">
                 <div class="container">
@@ -289,10 +355,11 @@
                         </div>
                         <div class="form-group">
                             <div class="col-md-9">
-                                <span>Score: </span><select th:field="*{score}">
-                                <option class="btn btn-default dropdown-toggle" th:each="score : ${calification}" th:value="${score}" th:text="${score}">
-                                </option>
-                            </select>
+                                <span>Score: </span>
+                                <select th:field="*{score}">
+                                    <option class="btn btn-default dropdown-toggle" th:each="score : ${calification}" th:value="${score}" th:text="${score}">
+                                    </option>
+                                </select>
                             </div>
                         </div>
                         <div class="form-group">

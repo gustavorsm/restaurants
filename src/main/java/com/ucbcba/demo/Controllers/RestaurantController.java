@@ -228,6 +228,12 @@ public class RestaurantController {
         model.addAttribute("isLiked", isLiked);
         model.addAttribute("logged", logged);
         model.addAttribute("photos", restaurantPhotos);
+
+        Restaurant mapRestaurant = new Restaurant();
+        mapRestaurant.setLatitude(restaurant.getLatitude());
+        mapRestaurant.setLongitude(restaurant.getLongitude());
+        mapRestaurant.setName(restaurant.getName());
+        model.addAttribute("mapRestaurant",mapRestaurant);
         return "restaurantUserView";
     }
 

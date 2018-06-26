@@ -252,6 +252,14 @@
                         <option th:each="city : ${cities}" th:value="${city.name}"
                                 th:selected="${city.name} == ${citySelected}" th:text="${city.name}"></option>
                     </select>
+
+                    <!--<select class="btn btn-default" id="scoreDropdown" onchange="changeSearchFilter()"
+                            name="scoreDropdown">
+                        <option value="Any Score">Any Score</option>
+                        <option th:each="score : ${scores}" th:value="${score.quantity}"
+                                th:selected="${score.quantity} == ${scoreSelected}" th:text="${score.cad}"></option>
+                    </select>-->
+
                     <input type="hidden" id="showContent" name="showContent" th:value="${showTable}"/>
                     <input class="btn btn-default" type="submit" style="display:inline;" value="Search"/>
                 </form>
@@ -292,6 +300,7 @@
                 </td>
             </tr>
         </table>
+
         <div th:if="${showTable=='map'}" id="map"></div>
         <script th:inline="javascript">
             function initMap() {
@@ -312,9 +321,6 @@
             }
 
         </script>
-        <!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDyYErgX5t-pShxDcxp3FbHX4Cdnmb01f0&amp;callback=initMap"
-                async defer></script>
--->
         <script async="async" defer="defer"
                 src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDyYErgX5t-pShxDcxp3FbHX4Cdnmb01f0&amp;callback=initMap">
         </script>
