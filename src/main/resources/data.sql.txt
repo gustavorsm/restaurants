@@ -1,0 +1,7 @@
+delete from nivelRestaurante;
+
+INSERT INTO nivelRestaurante(id, nombre, calificacion) VALUES (100, 'Impopular',1);
+INSERT INTO nivelRestaurante(id, nombre, calificacion) VALUES (101, 'Poco Popular',2);
+INSERT INTO nivelRestaurante(id, nombre, calificacion) VALUES (102, 'Intermedio',3);
+INSERT INTO nivelRestaurante(id, nombre, calificacion) VALUES (103, 'Popular',4);
+INSERT INTO nivelRestaurante(id, nombre, calificacion) VALUES (104, 'Muy Popular',5);

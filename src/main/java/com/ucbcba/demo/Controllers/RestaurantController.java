@@ -31,6 +31,7 @@ public class RestaurantController {
     private UserLikesService userLikesService;
     private UserService userService;
     private CommentService commentService;
+    private NivelRestauranteService nivelRestauranteService;
 
     @Autowired
     public void setRestaurantService(RestaurantService restaurantService) {
@@ -45,6 +46,11 @@ public class RestaurantController {
     @Autowired
     public void setCityService(CityService cityService) {
         this.cityService = cityService;
+    }
+
+    @Autowired
+    public void setNivelRestauranteService(NivelRestauranteService nivelRestauranteService ) {
+        this.nivelRestauranteService = nivelRestauranteService;
     }
 
     @Autowired
@@ -83,6 +89,7 @@ public class RestaurantController {
     public String newRestaurant(Model model) {
         model.addAttribute("restaurantCategories", categoryService.listAllCategories());
         model.addAttribute("cities", cityService.listAllCities());
+        model.addAttribute("nivelRestaurantes", nivelRestauranteService.listAllNivelRestaurantes());
         model.addAttribute("restaurant", new Restaurant());
         return "newRestaurant";
     }
@@ -153,6 +160,7 @@ public class RestaurantController {
         model.addAttribute("restaurant", restaurantService.getRestaurant(id));
         model.addAttribute("restaurantCategories", categoryService.listAllCategories());
         model.addAttribute("cities", cityService.listAllCities());
+        model.addAttribute("nivelRestaurantes", nivelRestauranteService.listAllNivelRestaurantes());
         model.addAttribute("photos", restaurantPhotos);
         model.addAttribute("images", photoService.listAllPhotosById(id));
         return "restaurantForm";

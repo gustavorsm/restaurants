@@ -38,6 +38,11 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.REMOVE)
     private List<Comment> comments;
 
+    @ManyToOne()
+    @JoinColumn(name = "nivelRestaurante_id")
+    private NivelRestaurante nivelRestaurante;
+
+
     @ManyToMany
     @JoinTable(name = "restaurant_category", joinColumns = @JoinColumn(name = "restaurant_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name="category_id", referencedColumnName = "id"))
@@ -124,5 +129,13 @@ public class Restaurant {
 
     public void setLongitude(Float longitude) {
         this.longitude = longitude;
+    }
+
+    public NivelRestaurante getNivelRestaurante() {
+        return nivelRestaurante;
+    }
+
+    public void setNivelRestaurante(NivelRestaurante nivelRestaurante) {
+        this.nivelRestaurante = nivelRestaurante;
     }
 }
